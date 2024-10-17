@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 const User = () => {
@@ -9,7 +10,7 @@ const User = () => {
     const [search] = useSearchParams();
     const id = search.get("id");
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         setLoading(true);
         try {
             const { data } = await axios.get(`http://localhost:4000/api/v1/users/byId/${id}`);
@@ -19,11 +20,11 @@ const User = () => {
             console.log(error);
         }
         setLoading(false);
-    }
+    }, [id]);
 
     useEffect(() => {
         fetchUser();
-    }, []);
+    }, [fetchUser]);
 
     return loading ? (
         <div className="flex justify-center items-center">
