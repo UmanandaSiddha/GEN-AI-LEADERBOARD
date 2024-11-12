@@ -1,6 +1,7 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import User from './user.model.js';
+import WebScrapper from './scrapper.js';
 
 export const pushToDatabase = async (req, res) => {
     try {
@@ -53,7 +54,7 @@ export const addNewUser = async (req, res) => {
             });
         }
 
-        const newUser = new User({
+        const newUser = await User.create({
             name,
             publicProfile: url
         });
@@ -64,6 +65,50 @@ export const addNewUser = async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating user:', error.message);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
+    }
+}
+
+export const getArcadeUsers = async (req, res) => {
+    try {
+        const users = await User.find({
+            badges: { $elemMatch: { title: "Level 3: Google Cloud Adventures" } }
+        });
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            users,
+        });
+    } catch (error) {
+        console.error('Error getting arcade users:', error.message);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
+    }
+}
+
+export const scrapUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        await WebScrapper(user.publicProfile);
+
+        res.status(200).json({
+            success: true,
+            message: "User scraped successfully"
+        });
+    } catch (error) {
+        console.error('Error scrapping User By Id:', error.message);
         res.status(500).json({
             success: false,
             message: "Something went wrong"
@@ -85,6 +130,8 @@ export const getAllUsers = async (req, res) => {
             {
                 $group: {
                     _id: "$_id",
+                    name: { $first: "$name" },  // Get the name
+                    publicProfile: { $first: "$publicProfile" }, // Get the publicProfile URL
                     userName: { $first: "$profile.userName" },  // Get the username
                     points: { $first: "$league.points" },  // Get the points
                     badgeCount: { $first: "$badgeCount" }  // Keep the badge count for sorting
@@ -94,6 +141,8 @@ export const getAllUsers = async (req, res) => {
             {
                 $project: {
                     _id: 1,                // Include _id
+                    name: 1,               // Include the name
+                    publicProfile: 1,      // Include the publicProfile URL
                     userName: 1,           // Include the username
                     badgeCount: 1,         // Include the badge count only
                     points: 1              // Include the points

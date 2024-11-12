@@ -1,15 +1,26 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-import User from "./pages/User";
-import Users from "./pages/Users";
+import backgroundImage from '/background.png';
+import Create from "./pages/Create";
 
 const App = () => {
     return (
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/user" element={<User />} />
-            <Route path="/users" element={<Users />} />
-        </Routes>
+        <div className="w-full min-h-screen">
+            <div className="w-full" style={{
+                backgroundImage: `url(${backgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundBlendMode: 'multiply',
+                backgroundAttachment: 'fixed',
+                backgroundRepeat: 'repeat-y',
+                overflow: 'hidden',
+            }}>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/create" element={<Create />} />
+                </Routes>
+            </div>
+        </div>
     )
 }
 

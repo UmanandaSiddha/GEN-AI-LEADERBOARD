@@ -61,16 +61,14 @@ const scrapeEligibleUsers = async () => {
 
     try {
         const users = await User.find({});
-        const usersToScrape = users.filter(user => user.badges.length < 17);
 
-        for (let i = 0; i < usersToScrape.length; i += BATCH_SIZE) {
-            const batch = usersToScrape.slice(i, i + BATCH_SIZE);
+        for (let i = 0; i < users.length; i += BATCH_SIZE) {
+            const batch = users.slice(i, i + BATCH_SIZE);
             await Promise.all(batch.map(user => WebScrapper(user.publicProfile)));
             console.log(`Processed batch ${Math.floor(i / BATCH_SIZE) + 1}`);
         }
 
         console.log("Completed web scraping for users");
-
     } catch (error) {
         console.error("An error occurred while scraping:", error.message);
     } finally {

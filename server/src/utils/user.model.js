@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
                 {
                     validator: function (value) {
                         const baseUrl = "https://www.cloudskillsboost.google/public_profiles/";
-                        const regex = new RegExp(`^${baseUrl}[a-f0-9-]+$`, 'i');
+                        const regex = new RegExp(`^${baseUrl}[a-z0-9-]+$`, 'i'); // Allows alphanumeric and hyphen characters
                         return regex.test(value) && validator.isURL(value);
                     },
                     message: "Invalid URL format"
