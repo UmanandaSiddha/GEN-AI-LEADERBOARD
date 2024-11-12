@@ -78,7 +78,7 @@ const scrapeEligibleUsers = async () => {
 
 // scrapeEligibleUsers();
 
-cron.schedule(`0 * * * *`, async () => {
+cron.schedule(`0 0 * * *`, async () => {
     await scrapeEligibleUsers();
 });
 

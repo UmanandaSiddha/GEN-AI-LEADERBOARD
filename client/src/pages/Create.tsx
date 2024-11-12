@@ -33,7 +33,6 @@ const Create = () => {
             setUrl("");
         } catch (error: any) {
             alert("Error: " + error.response.data.message);
-            console.log(error)
         }
     }
     return (
